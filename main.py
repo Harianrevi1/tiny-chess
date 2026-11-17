@@ -16,10 +16,11 @@ RD=(1,16,-1,-16)
 R=random.Random(7)
 Z=[R.getrandbits(64) for _ in range(1561)]
 MATE=100000
-LIM=50000
+LIM=100000
 nodes=0
 TT={}
 KIL=[0]*256
+SQ=tuple(x for x in range(128) if not x&136)
 B=[0]*128
 CAST=0
 EP=-1
@@ -62,8 +63,7 @@ def atk(b,s,o):
  return 0
 def gen(w,c,e,cap):
  m=[]
- for s in range(128):
-  if s&136:continue
+ for s in SQ:
   p=B[s]
   if p*w<=0:continue
   t=abs(p)
@@ -157,8 +157,7 @@ def unmake(m,w):
  CAST,EP,HASH,HM=oc,oe,oh,ohm
 def ev(w):
  s=0;ph=0;nb=[0,0]
- for i in range(128):
-  if i&136:continue
+ for i in SQ:
   p=B[i]
   if not p:continue
   t=abs(p)
