@@ -19,9 +19,50 @@ env at `MAKEFUN_ENV_URL` (`POST /game`, `POST /move`) and searches with:
   null-move pruning
 - evaluation: material + piece-square tables + bishop pair
 
-Practice Elo (local, vs the kit's env): trial-0 1451, trial-1 1279,
-trial-2 1099 at 100,000 nodes (mean ~1276, above the 1,154 final floor).
-Deterministic: the same trial replayed plays the same moves.
+## Hasil trial practice
+
+Diukur lokal melawan env kit, 6 game per trial, anggaran 100.000 node
+per langkah (versi engine golfed yang sama dengan `main.py` sekarang):
+
+| trial | Elo | menang | seri | kalah |
+|-------|-----|--------|------|--------|
+| trial-0 | 1545 | 4 | 1 | 1 |
+| trial-1 | 1364 | 3 | 1 | 2 |
+| trial-2 | 1279 | 3 | 0 | 3 |
+| **rata-rata** | **1396** | | | |
+
+Rata-rata 1396 di atas floor final 1.154 dan baseline sunfish ~1.325.
+Deterministic: trial yang sama diulang memainkan langkah yang sama —
+trial-0 versi packed dan unpacked identik (1545, 4W 1D 1L).
+
+## Cara kerja engine
+
+Sekali jalan, engine ini berputar dalam satu loop sederhana: minta posisi
+dari env, cari langkah terbaik, kirim langkah itu, lalu terapkan balasan
+lawan dan ulangi sampai permainan selesai.
+
+Papan disimpan sebagai array 0x88 — 128 kotak, 64 di antaranya valid —
+sehingga pengecekan "kotak ini di luar papan?" cukup satu operasi bit.
+Setiap langkah dikodekan dalam satu integer 16 bit: kotak asal, kotak
+tujuan, dan bidak promosi. Generator langkah menangani semua aturan
+catur: rokade, en passant, dan promosi ke empat bidak.
+
+Pencarian memakai alpha-beta dengan pendalaman iteratif: mulai dari
+kedalaman 1, naik satu tingkat demi satu tingkat, sampai anggaran node
+habis. Anggarannya tetap — 100.000 node per langkah — jadi tidak ada jam
+yang dibaca dan tidak ada angka acak; posisi yang sama selalu menghasilkan
+langkah yang sama. Quiescence search menenangkan posisi yang masih
+"panas" (ada tangkapan, promosi, atau balasan cek yang menggantung)
+sebelum evaluasi dibaca. Tabel transposisi (kunci Zobrist, seed tetap)
+menyimpan hasil pencarian supaya posisi yang berulang tidak dihitung dua
+kali, dan urutan langkah (tangkapan besar dulu, langkah dari tabel dulu)
+membuat pemotongan alpha-beta bekerja lebih awal.
+
+Evaluasi posisinya ringan: nilai material tiap bidak ditambah bonus
+posisi dari tabel piece-square setengah lebar (simetris kiri-kanan),
+plus bonus kecil kalau punya sepasang gajah. Tidak ada jaringan saraf,
+tidak ada buku bukaan — semua keputusan lahir dari pencarian di atas
+papan saat itu juga.
 
 ## The size rule
 
