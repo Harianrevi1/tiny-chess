@@ -212,14 +212,15 @@ def ab(w,d,a,b,ply):
  nodes+=1
  if nodes>LIM:raise A
  if HC.get(HASH,0)>1 or HM>=100:return 0
+ inchk=atk(B,KS[(w+1)//2],-w)
+ if d<=0:return qs(w,a,b,ply)
+ if inchk:d+=1
  e=TT.get(HASH)
  if e and e[0]>=d:
   s=e[1]
   if e[2]==0:return s
   if e[2]==1 and s>=b:return s
   if e[2]==2 and s<=a:return s
- if d<=0:return qs(w,a,b,ply)
- inchk=atk(B,KS[(w+1)//2],-w)
  if d>=3 and not inchk:
   oe=EP;oh=HASH
   if oe>=0:HASH^=Z[1553+(oe&7)]
