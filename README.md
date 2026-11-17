@@ -21,8 +21,7 @@ env at `MAKEFUN_ENV_URL` (`POST /game`, `POST /move`) and searches with:
 
 ## Hasil trial practice
 
-Diukur lokal melawan env kit, 6 game per trial, anggaran 100.000 node
-per langkah (versi engine golfed yang sama dengan `main.py` sekarang):
+Diukur lokal vs env kit, 6 game/trial, 100.000 node/langkah:
 
 | trial | Elo | menang | seri | kalah |
 |-------|-----|--------|------|--------|
